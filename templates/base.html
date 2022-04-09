@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DailY Cost</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+    <style>
+        .today {
+            border-bottom: solid 2px skyblue;
+        }
+        .total-row{
+            font-size: 18px;
+            font-weight: 500px;
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5" id="app">
+        {% block content %}
+
+        {% endblock content %}
+    </div>
+
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {% if debug %}
+    <script src="{% static 'vue/vue.js' %}"></script>
+
+    {% else %}
+    <script src="{% static 'vue/vue.min.js' %}"></script>
+    {% endif %}
+
+
+    <script>
+        var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+        var app = new Vue({
+            el: "#app",
+            delimiters: ['[[', ']]'],
+            data: {
+                msg: 'hello',
+                today_cost_lists: [],
+                today_total_cost:null,
+                name_of_cost: null,
+                amount_of_cost: null,
+                edit:{
+                    name_of_cost: null,
+                    amount_of_cost: null,
+                    id:null,
+                },
+                delete:{
+                    id:null,
+                }
+            },
+            mounted: function () {
+                this.showTodayCostList();
+            },
+            methods: {
+                showTodayCostList: function () {
+                    var that = this;
+                    $.ajax({
+                        method: 'GET',
+                        url: 'api/today-cost-list/',
+                    }).then(response => {
+                        console.log(response);
+                        that.today_cost_lists = response.today_cost_list;
+                        that.today_total_cost = response.today_total_cost;
+                    }).catch(error => {
+                        console.log(error)
+                    })
+                },
+                onSubmit: function () {
+
+                    let formData = {};
+                    formData.name_of_cost = this.name_of_cost;
+                    formData.amount_of_cost = this.amount_of_cost;
+                    console.log(formData);
+
+                    const csrftoken = this.getCookie('csrftoken');
+                    $.ajax({
+                        method: 'POST',
+                        url: 'api/today-cost-list/',
+                        data: JSON.stringify(formData),
+                        headers: { "X-CSRFToken": csrftoken },
+                        contentType: "application/json",
+                    }).then(response => {
+                        this.showTodayCostList();
+                        $('.btn-close').click();
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                },
+                getCookie: function (name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                },
+                showEditModal:function(id){
+                    this.id = id;
+                    $.ajax({
+                        method: 'GET',
+                        url: 'api/today-cost-list/' + id + '/',
+                    }).then(response => {
+                        console.log(response);
+                        this.edit.name_of_cost = response.name_of_cost;
+                        this.edit.amount_of_cost = response.amount_of_cost;
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                },
+                onEditCost:function(){
+                    let formData = {};
+                    formData.name_of_cost = this.edit.name_of_cost;
+                    formData.amount_of_cost = this.edit.amount_of_cost;
+
+                    const csrftoken = this.getCookie('csrftoken');
+                    $.ajax({
+                        method: 'PUT',
+                        url: 'api/today-cost-list/' + this.id + '/',
+                        data: JSON.stringify(formData),
+                        headers: { "X-CSRFToken": csrftoken },
+                        contentType: "application/json",
+                    }).then(response => {
+                        this.showTodayCostList();
+                        $('.btn-close').click();
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                },
+                showDeleteModal:function(id){
+                    this.delete.id = id;
+                },
+                onDelete:function(){
+                    const csrftoken = this.getCookie('csrftoken');
+                    $.ajax({
+                        method: 'DELETE',
+                        headers: { "X-CSRFToken": csrftoken },
+                        url: 'api/today-cost-list/' + this.delete.id + '/',
+                    }).then(response => {
+                        this.showTodayCostList();
+                        $('.btn-close').click();
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                },
+                
+            },
+        })
+    </script>
+
+</body>
+
+</html>
