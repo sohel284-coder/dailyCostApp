@@ -4,8 +4,8 @@
     <h1>Daily Cost Track </h1>
 </center>
 <div class="row mt-3">
-    <div class="col-1"></div>
-    <div class="col-10 p-3">
+    <div class="col-xl-1"></div>
+    <div class="col-xl-10 p-3" style="max-width: 999px;">
         <div class="row">
             <div class="today text-center my-3 col-12">
                 <h2 class="mb-3">{{today}}</h2>
@@ -29,30 +29,82 @@
                             <th scope="row">[[index + 1 ]]</th>
                             <td>[[list.name_of_cost]]</td>
                             <td>[[list.amount_of_cost]]</td>
-                            <td> <button type="button" data-id="[[list.id]]" data-bs-toggle="modal" data-bs-target="#EditTodayCostModal"  @click="showEditModal(list.id)" class="btn btn-outline-info btn-sm">Edit</button></td>
-                            <td><button type="button" data-id="[[list.id]]" data-bs-toggle="modal" data-bs-target="#DeleteTodayCostModal" @click="showDeleteModal(list.id)" class="btn btn-outline-danger btn-sm">Delete</button></td>
+                            <td> <button type="button" data-id="[[list.id]]" data-bs-toggle="modal"
+                                    data-bs-target="#EditTodayCostModal" @click="showEditModal(list.id)"
+                                    class="btn btn-outline-info btn-sm"><i class="fa-solid fa-pen-to-square"></i></button></td>
+                            <td><button type="button" data-id="[[list.id]]" data-bs-toggle="modal"
+                                    data-bs-target="#DeleteTodayCostModal" @click="showDeleteModal(list.id)"
+                                    class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button></td>
                         </tr>
-                        <tr  class="py-2 bg-white border-none total-row">
-                            <td colspan="2" >Today Total Cost</td>
+                        <tr class="py-2 bg-white border-none total-row">
+                            <td colspan="2">Today Total Cost</td>
                             <td>[[today_total_cost]]</td>
                             <td></td>
                             <td></td>
                         </tr>
-                      
+
                     </tbody>
                 </table>
-               
+
 
                 <center>
                     <button type="button" data-bs-toggle="modal" data-bs-target="#todayCostModal"
-                        class="btn btn-outline-primary btn-md mt-2"> + Add Cost</button>
+                        class="btn btn-outline-primary btn-md mt-2"> <i class="fa-solid fa-circle-plus"></i> Add Cost</button>
                 </center>
-                
+
             </div>
         </div>
 
     </div>
-    <div class="col-1"></div>
+    <div class="col-xl-1"></div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-xl-1"></div>
+    <div class="col-xl-10" style="max-width: 999px;">
+        <div class="row today">
+            <div class="col-lg-8">
+                <h2 class="">[[current_month_name]] Month Cost List</h2>
+            </div>
+            <div class="col-lg-4">
+                <select class="form-select"  @change="changeMonth($event)"  v-model="current_month_name" aria-label="Default select example">
+                    <option v-for="month in months" :value="month" >[[month]]</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="co-12">
+                <table v-if="isFound" class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Day</th>
+                            <th scope="col">Cost</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="lst in current_month_cost_lists">
+                            <td>[[lst.created_at__date]]</a></td>
+                            <td>[[lst.total]]</td>
+                            <td><button type="button" data-bs-toggle="modal" data-bs-target="#detailsModal"
+                                    @click="showDetails(lst.created_at__date)"
+                                    class="btn btn-sm btn-info">Details</button></td>
+
+                        </tr>
+                        <tr class="py-2 bg-light">
+                            <td class="text-center">Monthly Total Cost</td>
+                            <td colspan="">[[monthly_total_cost]]</td>
+                            <td></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div v-else class="text-danger">Data is Not Found</div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-xl-1"></div>
 </div>
 
 <!-- Modal -->
@@ -67,27 +119,26 @@
                 <div class="modal-body">
 
                     <div class="form-group mb-3">
-                        <label for="costName" >Name Of Cost</label>
-                        <input type="text" v-model="name_of_cost" class="form-control">
+                        <label for="costName">Name Of Cost</label>
+                        <input required type="text" v-model="name_of_cost" class="form-control">
                     </div>
                     <div class="form-group mb-3">
                         <label for="costName">Amount Of Cost</label>
-                        <input type="number" class="form-control" v-model="amount_of_cost">
+                        <input required type="number" class="form-control" v-model="amount_of_cost">
                     </div>
-                    
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-success btn-sm">Save</button>
-                </div>    
+                </div>
             </form>
         </div>
 
     </div>
 </div>
 <!-- Edit Modal -->
-<div class="modal fade" id="EditTodayCostModal" tabindex="-1" role="dialog" aria-labelledby="EditTodayCostModalLabel" aria-hidden="true">
+<div class="modal fade" id="EditTodayCostModal" tabindex="-1" role="dialog" aria-labelledby="EditTodayCostModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -98,19 +149,19 @@
                 <div class="modal-body">
 
                     <div class="form-group mb-3">
-                        <label for="costName" >Name Of Cost</label>
-                        <input type="text" v-model="edit.name_of_cost" class="form-control mt-1">
+                        <label for="costName">Name Of Cost</label>
+                        <input required type="text" v-model="edit.name_of_cost" class="form-control mt-1">
                     </div>
                     <div class="form-group mb-3">
                         <label for="costName">Amount Of Cost</label>
-                        <input type="number" class="form-control mt-1" v-model="edit.amount_of_cost">
+                        <input required type="number" class="form-control mt-1" v-model="edit.amount_of_cost">
                     </div>
-                
-                </div> 
+
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-outline-info btn-sm">Save Changes</button>
-                </div>   
+                </div>
             </form>
         </div>
 
@@ -118,7 +169,8 @@
 </div>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="DeleteTodayCostModal" tabindex="-1" role="dialog" aria-labelledby="DeleteTodayCostModalLabel" aria-hidden="true">
+<div class="modal fade" id="DeleteTodayCostModal" tabindex="-1" role="dialog"
+    aria-labelledby="DeleteTodayCostModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -126,11 +178,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <center>Are you sure want to delete ?</center>      
+                <center>Are you sure want to delete ?</center>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
-                <button type="submit" @click="onDelete"  class="btn btn-outline-info btn-sm">Yes</button>
+                <button type="submit" @click="onDelete" class="btn btn-outline-info btn-sm">Yes</button>
             </div>
         </div>
 
@@ -138,7 +190,75 @@
 </div>
 
 
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="detailsModalLabel">[[date]] Cost Details</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" @click="closeModal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table v-show="isDetails" class="table text-center bg-light">
+                    <thead>
+                        <tr>
+                            <th scope="col">No.</th>
+                            <th scope="col">Name Of Cost</th>
+                            <th scope="col">Amount Of Cost</th>
+                            <th>Action</th>
+                            <th>Action</th>
 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(list, index) in date_wise_cost_lists" rowspan="2">
+                            <th scope="row">[[index + 1 ]]</th>
+                            <td>[[list.name_of_cost]]</td>
+                            <td>[[list.amount_of_cost]]</td>
+                            <td> <button type="button" @click="oneditDayWiseCost(list.id)"
+                                    class="btn btn-outline-info btn-sm"><i class="fa-solid fa-pen-to-square"></i></button></td>
+                            <td><button type="button" @click="ondeleteDateWiseCost(list.id)"
+                                    class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button></td>
+                        </tr>
+                        <tr class="py-2 bg-white border-none total-row">
+                            <td colspan="2">Total Cost</td>
+                            <td>[[date_wise_total_cost]]</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <form v-show="isEdit" action="" @submit.prevent="updateDateWiseCost">
+
+                    <div class="form-group mb-3">
+                        <label for="costName">Name Of Cost</label>
+                        <input type="text" v-model="edit.name_of_cost" class="form-control mt-1">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="costName">Amount Of Cost</label>
+                        <input type="number" class="form-control mt-1" v-model="edit.amount_of_cost">
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-info btn-sm">Save Changes</button>
+                </form>
+
+                <div v-show="isDelete" class="delete">
+                    <center>Are You sure want to delete</center>
+                    <button type="submit" @click="confirmDelete" class="btn btn-outline-info btn-sm">Yes</button>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+        </div>
+    </div>
+
+</div>
+</div>
 
 
 {% endblock %}

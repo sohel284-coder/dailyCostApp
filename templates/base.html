@@ -8,12 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DailY Cost</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
 
     <style>
         .today {
             border-bottom: solid 2px skyblue;
         }
-        .total-row{
+
+        .total-row {
             font-size: 18px;
             font-weight: 500px;
 
@@ -48,21 +50,37 @@
             data: {
                 msg: 'hello',
                 today_cost_lists: [],
-                today_total_cost:null,
+                today_total_cost: null,
                 name_of_cost: null,
                 amount_of_cost: null,
-                edit:{
+                date_of_cost:null,
+                isDetails: false,
+                isEdit: false,
+                isDelete: false,
+                date: null,
+                months: [],
+                isFound:false,
+                seletedMonth: '',
+                edit: {
                     name_of_cost: null,
                     amount_of_cost: null,
-                    id:null,
+                    id: null,
                 },
-                delete:{
-                    id:null,
-                }
+                delete: {
+                    id: null,
+                },
+                current_month_name: '',
+                current_month_cost_lists: [],
+                monthly_total_cost: null,
+                date_wise_cost_lists: [],
+                date_wise_total_cost: null,
             },
             mounted: function () {
                 this.showTodayCostList();
+                this.getCurrentMonthCostLists();
+
             },
+
             methods: {
                 showTodayCostList: function () {
                     var that = this;
@@ -113,7 +131,7 @@
                     }
                     return cookieValue;
                 },
-                showEditModal:function(id){
+                showEditModal: function (id) {
                     this.id = id;
                     $.ajax({
                         method: 'GET',
@@ -126,7 +144,7 @@
                         console.log(error);
                     })
                 },
-                onEditCost:function(){
+                onEditCost: function () {
                     let formData = {};
                     formData.name_of_cost = this.edit.name_of_cost;
                     formData.amount_of_cost = this.edit.amount_of_cost;
@@ -145,10 +163,10 @@
                         console.log(error);
                     })
                 },
-                showDeleteModal:function(id){
+                showDeleteModal: function (id) {
                     this.delete.id = id;
                 },
-                onDelete:function(){
+                onDelete: function () {
                     const csrftoken = this.getCookie('csrftoken');
                     $.ajax({
                         method: 'DELETE',
@@ -161,8 +179,177 @@
                         console.log(error);
                     })
                 },
-                
+                getCurrentMonthCostLists: function () {
+                    var that = this;
+                    $.ajax({
+                        method: 'GET',
+                        url: 'api/current-month-cost-list/',
+                    }).then(response => {
+                        console.log(response);
+                        if(response.cmc_lists.length == 0){
+                            this.isFound = false;
+                        }
+                        else{
+                            this.isFound = true;
+                            this.current_month_cost_lists = response.cmc_lists;
+                            this.monthly_total_cost = response.monthly_total_cost;
+                            var current_month_index = response.current_month;
+                            this.find_month_name(current_month_index);
+                        }
+                       
+                    }).catch(error => {
+                        console.log(error)
+                    })
+                },
+                showDetails: function (date_param) {
+
+                    var that = this;
+                    that.date = date_param;
+
+                    $.ajax({
+                        method: 'GET',
+                        url: 'api/show-details/' + date_param + '/',
+                    }).then(response => {
+                        console.log(response);
+                        this.isDetails = true;
+                        this.isDelete = false;
+
+                        this.date_wise_cost_lists = response.date_wise_cost_lists;
+                        this.date_wise_total_cost = response.date_wise_total_cost;
+
+                    }).catch(error => {
+                        console.log(error)
+                    })
+                },
+                oneditDayWiseCost: function (id) {
+                    this.isDetails = false;
+                    this.isEdit = true;
+                    this.isDelete = false;
+
+                    console.log(id);
+
+                    this.id = id;
+                    $.ajax({
+                        method: 'GET',
+                        url: 'api/update-date-wise-cost/' + id + '/',
+                    }).then(response => {
+                        this.edit.name_of_cost = response.name_of_cost;
+                        this.edit.amount_of_cost = response.amount_of_cost;
+
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                },
+                updateDateWiseCost: function () {
+                    let formData = {};
+                    formData.name_of_cost = this.edit.name_of_cost;
+                    formData.amount_of_cost = this.edit.amount_of_cost;
+
+                    const csrftoken = this.getCookie('csrftoken');
+                    $.ajax({
+                        method: 'PUT',
+                        url: 'api/update-date-wise-cost/' + this.id + '/',
+                        data: JSON.stringify(formData),
+                        headers: { "X-CSRFToken": csrftoken },
+                        contentType: "application/json",
+                    }).then(response => {
+                        console.log(response);
+                        this.isEdit = false;
+                        this.showDetails(response.date_of_cost);
+
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                },
+                ondeleteDateWiseCost: function (id) {
+                    this.isDetails = false;
+                    this.isEdit = false;
+                    this.isDelete = true;
+                    this.delete.id = id;
+                    const csrftoken = this.getCookie('csrftoken');
+                    $.ajax({
+                        method: 'DELETE',
+                        headers: { "X-CSRFToken": csrftoken },
+                        url: 'api/update-date-wise-cost/' + this.delete.id + '/',
+                    }).then(response => {
+                        $('.btn-close').click();
+                        this.showTodayCostList();
+                        this.getCurrentMonthCostLists();
+
+                    }).catch(error => {
+                        console.log(error);
+
+                    })
+
+
+                },
+                confirmDelete: function () {
+
+                },
+                closeModal: function () {
+                    this.isDetails = false;
+                    this.isEdit = false;
+                    this.isDelete = false;
+
+                    this.getCurrentMonthCostLists();
+                },
+                find_month_name: function (month_index) {
+
+                    var month_names = {
+                        '1': 'January', '2': 'February', '3': 'March', '4': 'April',
+                        '5': 'May', '6': 'June', '7': 'July', '8': 'August',
+                        '9': 'September', '10': 'October', '11': 'November', '12': 'December',
+
+                    }
+
+                    this.current_month_name = month_names[month_index];
+
+                    this.months = Object.values(month_names);
+                },
+                changeMonth: function (event) {
+                    console.log(event.target.value);
+                    var month_index = this.findMonthIndex(event.target.value)
+                    console.log(month_index);
+
+                    $.ajax({
+                        method: 'GET',
+                        url: 'api/monthly-cost-list/' + month_index + '/',
+                    }).then(response => {
+                        console.log(response);
+                        if(response.cmc_lists.length == 0){
+                            this.isFound = false;
+                        }
+                        else{
+                            this.isFound = true;
+                            this.current_month_cost_lists = response.cmc_lists;
+                            this.monthly_total_cost = response.monthly_total_cost;
+                            var current_month_index = response.current_month;
+                            this.find_month_name(current_month_index);
+                        }
+                       
+                    }).catch(error => {
+                        console.log(error)
+                    })
+
+
+                },
+                findMonthIndex:function(month_name){
+                    var month_names = {
+                        '1': 'January', '2': 'February', '3': 'March', '4': 'April',
+                        '5': 'May', '6': 'June', '7': 'July', '8': 'August',
+                        '9': 'September', '10': 'October', '11': 'November', '12': 'December',
+                    }
+                    for(var month_index in month_names){
+                        if(month_names[month_index] == month_name){
+                            return month_index;
+                        }
+                        
+                    }
+                },
+
+
             },
+
         })
     </script>
 

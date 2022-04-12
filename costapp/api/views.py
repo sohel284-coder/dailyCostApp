@@ -1,4 +1,8 @@
 from datetime import date
+from datetime import datetime
+
+from django.db.models import Sum, Max
+from django.db.models.functions import Trunc
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -87,3 +91,118 @@ class SingleTodayCostAPIView(APIView):
         single_cost_info = self.get_single_cost(pk)
         single_cost_info.delete()
         return Response('successfully Delete', status=status.HTTP_204_NO_CONTENT)
+
+
+class CurrentMonthCostAPIView(APIView):
+    permission_classes = (permissions.AllowAny, )
+
+    def get(self, request):
+        current_month = datetime.now().month
+        current_month_cost_lists = MyCost.objects.filter(created_at__month=current_month)
+        cmc_lists = current_month_cost_lists.filter().values('created_at__date').order_by('created_at__date').annotate(total=Sum('amount_of_cost'))
+
+        monthly_total_cost = 0
+
+        for lst in cmc_lists:
+            monthly_total_cost = monthly_total_cost + lst['total']
+        
+        context = {
+            'cmc_lists':cmc_lists,
+            'monthly_total_cost':monthly_total_cost,
+            'current_month':current_month,
+        }
+        return Response(context, status=status.HTTP_200_OK)
+
+
+class MonthlyCostAPIView(APIView):
+    permission_classes = (permissions.AllowAny, )
+
+    def get(self, request, month):
+        current_month = month
+        print(current_month)
+        try:
+            current_month_cost_lists = MyCost.objects.filter(created_at__month=current_month)
+        except:
+            context = {}; 
+            return Response(context, status=status.HTTP_200_OK) 
+        cmc_lists = current_month_cost_lists.filter().values('created_at__date').order_by('created_at__date').annotate(total=Sum('amount_of_cost'))
+
+        monthly_total_cost = 0
+
+        for lst in cmc_lists:
+            monthly_total_cost = monthly_total_cost + lst['total']
+        
+        context = {
+            'cmc_lists':cmc_lists,
+            'monthly_total_cost':monthly_total_cost,
+            'current_month':current_month,
+        }
+        return Response(context, status=status.HTTP_200_OK)
+
+
+class ShowDetails(APIView):
+    permission_classes = (permissions.AllowAny, )
+
+    def get(self, request, date_param):
+        date_wise_cost_lists = MyCost.objects.filter(created_at__date=date_param)
+        serializer = MyCostSerializer(date_wise_cost_lists, many=True, )
+
+        serializer_data = serializer.data
+        date_wise_total_cost = 0
+
+        for data in serializer_data:
+            date_wise_total_cost = date_wise_total_cost + data['amount_of_cost']
+
+        context = {
+            'date_wise_cost_lists':serializer.data,
+            'date_wise_total_cost':date_wise_total_cost
+        } 
+        return Response(context, status=status.HTTP_200_OK)
+
+
+class UpdateDeleteDateWiseCost(APIView):
+    permission_classes = (permissions.AllowAny, )
+
+    def get_single_cost(self, pk):
+        cost_info = get_object_or_404(MyCost, pk=pk)
+        return cost_info
+
+    def get(self, request, pk, format=None):
+        single_cost_info = self.get_single_cost(pk) 
+        serializer = MyCostSerializer(single_cost_info)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk, format=None):
+        single_cost_info = self.get_single_cost(pk)
+        data = request.data
+
+        data['date_of_cost'] = single_cost_info.date_of_cost
+        serializer = MyCostSerializer(single_cost_info, data=data, )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk, format=None):
+        single_cost_info = self.get_single_cost(pk)
+        single_cost_info.delete()
+        return Response('successfully Delete', status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
+"""
+  costs = (current_month_cost_lists
+            .annotate(day=Trunc('created_at', 'day'))
+            .values('day')
+            .annotate(greatest=Max('amount_of_cost'))
+            .values('greatest')
+            .aggregate(total=Sum('greatest'))
+        )
+
+        print(costs)
+"""
