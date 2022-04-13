@@ -20,7 +20,7 @@ class TodayMyCostAPIView(APIView):
 
     def get(self, request, format=None):
         today = date.today()
-        today_cost_list = MyCost.objects.filter(date_of_cost=today)
+        today_cost_list = MyCost.objects.filter(date_of_cost=today, user=request.user)
         print(today_cost_list)
         serializer = MyCostSerializer(today_cost_list, many=True)
 
@@ -44,6 +44,7 @@ class TodayMyCostAPIView(APIView):
         
         data = request.data
         data['date_of_cost'] = today
+        data['user'] = request.user.id
         total = data['amount_of_cost']
         try:
             for lst in today_cost_lists:
@@ -98,7 +99,7 @@ class CurrentMonthCostAPIView(APIView):
 
     def get(self, request):
         current_month = datetime.now().month
-        current_month_cost_lists = MyCost.objects.filter(created_at__month=current_month)
+        current_month_cost_lists = MyCost.objects.filter(created_at__month=current_month, user=request.user)
         cmc_lists = current_month_cost_lists.filter().values('created_at__date').order_by('created_at__date').annotate(total=Sum('amount_of_cost'))
 
         monthly_total_cost = 0
@@ -121,7 +122,7 @@ class MonthlyCostAPIView(APIView):
         current_month = month
         print(current_month)
         try:
-            current_month_cost_lists = MyCost.objects.filter(created_at__month=current_month)
+            current_month_cost_lists = MyCost.objects.filter(created_at__month=current_month, user=request.user)
         except:
             context = {}; 
             return Response(context, status=status.HTTP_200_OK) 
@@ -144,7 +145,7 @@ class ShowDetails(APIView):
     permission_classes = (permissions.AllowAny, )
 
     def get(self, request, date_param):
-        date_wise_cost_lists = MyCost.objects.filter(created_at__date=date_param)
+        date_wise_cost_lists = MyCost.objects.filter(created_at__date=date_param, user=request.user)
         serializer = MyCostSerializer(date_wise_cost_lists, many=True, )
 
         serializer_data = serializer.data

@@ -197,8 +197,8 @@
                     }).then(response => {
                         this.showTodayCostList();
                         $('.btn-close').click();
-                        this.name_of_cost = " ";
-                        this.amount_of_cost = " ";
+                        this.name_of_cost = '';
+                        this.amount_of_cost = '';
                     }).catch(error => {
                         console.log(error);
                     })
@@ -344,9 +344,11 @@
                     }).then(response => {
                         console.log(response);
                         this.isEdit = false;
+                        this.showTodayCostList();
+                        this.getCurrentMonthCostLists();
                         this.showDetails(response.date_of_cost);
-                        this.edit.name_of_cost = " ";
-                        this.edit.amount_of_cost = " ";
+                        this.edit.name_of_cost = '';
+                        this.edit.amount_of_cost = '';
 
                     }).catch(error => {
                         console.log(error);
