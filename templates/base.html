@@ -204,6 +204,8 @@
                     }).then(response => {
                         this.showTodayCostList();
                         $('.btn-close').click();
+                        this.name_of_cost = " ";
+                        this.amount_of_cost = " ";
                     }).catch(error => {
                         console.log(error);
                     })
@@ -251,6 +253,8 @@
                     }).then(response => {
                         this.showTodayCostList();
                         $('.btn-close').click();
+                        this.edit.name_of_cost = " ";
+                        this.edit.amount_of_cost = " ";
                     }).catch(error => {
                         console.log(error);
                     })
@@ -348,6 +352,8 @@
                         console.log(response);
                         this.isEdit = false;
                         this.showDetails(response.date_of_cost);
+                        this.edit.name_of_cost = " ";
+                        this.edit.amount_of_cost = " ";
 
                     }).catch(error => {
                         console.log(error);
