@@ -146,7 +146,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="EditTodayCostModalLabel">Add Today Cost</h4>
+                <h4 class="modal-title" id="EditTodayCostModalLabel">Edit Today Cost</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="" @submit.prevent="onEditCost">
@@ -178,7 +178,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="DeleteTodayCostModalLabel">Add Today Cost</h4>
+                <h4 class="modal-title" id="DeleteTodayCostModalLabel">Delete Today Cost</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -212,24 +212,29 @@
                             <th scope="col">Name Of Cost</th>
                             <th scope="col">Amount Of Cost</th>
                             <th>Action</th>
-                            <th>Action</th>
 
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(list, index) in date_wise_cost_lists" rowspan="2">
-                            <th scope="row">[[index + 1 ]]</th>
-                            <td>[[list.name_of_cost]]</td>
-                            <td>[[list.amount_of_cost]]</td>
-                            <td> <button type="button" @click="oneditDayWiseCost(list.id)"
-                                    class="btn btn-outline-info btn-sm"><i class="fa-solid fa-pen-to-square"></i></button></td>
-                            <td><button type="button" @click="ondeleteDateWiseCost(list.id)"
-                                    class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button></td>
+                            <th class="py-4" scope="row">[[index + 1 ]]</th>
+                            <td class="py-4">[[list.name_of_cost]]</td>
+                            <td class="py-4">[[list.amount_of_cost]]</td>
+                            <td>
+                                <div class="edit-btn">
+                                    <button type="button" @click="oneditDayWiseCost(list.id)"
+                                    class="btn btn-outline-info btn-sm"><i class="fa-solid fa-pen-to-square"></i></button>
+                                </div>
+                                <div class="delte-btn mt-1">
+                                    <button type="button" @click="ondeleteDateWiseCost(list.id)"
+                                    class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
+                            </td>
+                           
                         </tr>
                         <tr class="py-2 bg-white border-none total-row">
                             <td colspan="2">Total Cost</td>
                             <td>[[date_wise_total_cost]]</td>
-                            <td></td>
                             <td></td>
                         </tr>
 
