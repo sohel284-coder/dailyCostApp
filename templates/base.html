@@ -11,8 +11,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
 
     <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
         .today {
             border-bottom: solid 2px skyblue;
+        }
+
+        h1 {
+            font-weight: 700;
+            line-height: 36px;
+        }
+
+        h2 {
+            font-weight: 500px;
+            line-height: 32px;
         }
 
         .total-row {
@@ -20,10 +34,87 @@
             font-weight: 500px;
 
         }
+
+        .navbar-light {
+            background-color: #251d37;
+            box-shadow: 0px 6px 18px 0px #eee;
+        }
+
+        .btn-custom {
+            background-color: #fff !important;
+            border: solid 1px #fff;
+            color: #262626;
+            font-size: 18px;
+            font-weight: 500;
+            box-shadow: 0px 3px 8px #272728;
+
+        }
+
+        .btn-custom:hover {
+            box-shadow: 0px 6px 18px #272728;
+        }
+
+        .navbar-toggler {
+            border: none;
+            background-color: #fff;
+        }
+
+        @media screen and (max-width: 378px) {
+
+            table td,
+            table tr {
+                font-size: small;
+            }
+        }
+
+        @media screen and (min-width: 778px) {
+            table th {
+                font-size: 22px;
+            }
+
+            table td {
+                font-size: 18px;
+                font-weight: 500;
+            }
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        table th {
+            font-size: 24px;
+        }
+
+        table td {
+            font-size: 22px;
+            font-weight: 500;
+        }
+        
     </style>
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light py-4">
+        <div class="container">
+            <a class="navbar-brand text-white text-uppercase" href="#">{{username}}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon "></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-sm btn-custom py-2" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
 
     <div class="container mt-5" id="app">
         {% block content %}
@@ -36,10 +127,11 @@
 
     {% if debug %}
     <script src="{% static 'vue/vue.js' %}"></script>
-
     {% else %}
+
     <script src="{% static 'vue/vue.min.js' %}"></script>
     {% endif %}
+
 
 
     <script>
@@ -53,13 +145,13 @@
                 today_total_cost: null,
                 name_of_cost: null,
                 amount_of_cost: null,
-                date_of_cost:null,
+                date_of_cost: null,
                 isDetails: false,
                 isEdit: false,
                 isDelete: false,
                 date: null,
                 months: [],
-                isFound:false,
+                isFound: false,
                 seletedMonth: '',
                 edit: {
                     name_of_cost: null,
@@ -186,17 +278,17 @@
                         url: 'api/current-month-cost-list/',
                     }).then(response => {
                         console.log(response);
-                        if(response.cmc_lists.length == 0){
+                        if (response.cmc_lists.length == 0) {
                             this.isFound = false;
                         }
-                        else{
+                        else {
                             this.isFound = true;
                             this.current_month_cost_lists = response.cmc_lists;
                             this.monthly_total_cost = response.monthly_total_cost;
                             var current_month_index = response.current_month;
                             this.find_month_name(current_month_index);
                         }
-                       
+
                     }).catch(error => {
                         console.log(error)
                     })
@@ -316,34 +408,34 @@
                         url: 'api/monthly-cost-list/' + month_index + '/',
                     }).then(response => {
                         console.log(response);
-                        if(response.cmc_lists.length == 0){
+                        if (response.cmc_lists.length == 0) {
                             this.isFound = false;
                         }
-                        else{
+                        else {
                             this.isFound = true;
                             this.current_month_cost_lists = response.cmc_lists;
                             this.monthly_total_cost = response.monthly_total_cost;
                             var current_month_index = response.current_month;
                             this.find_month_name(current_month_index);
                         }
-                       
+
                     }).catch(error => {
                         console.log(error)
                     })
 
 
                 },
-                findMonthIndex:function(month_name){
+                findMonthIndex: function (month_name) {
                     var month_names = {
                         '1': 'January', '2': 'February', '3': 'March', '4': 'April',
                         '5': 'May', '6': 'June', '7': 'July', '8': 'August',
                         '9': 'September', '10': 'October', '11': 'November', '12': 'December',
                     }
-                    for(var month_index in month_names){
-                        if(month_names[month_index] == month_name){
+                    for (var month_index in month_names) {
+                        if (month_names[month_index] == month_name) {
                             return month_index;
                         }
-                        
+
                     }
                 },
 

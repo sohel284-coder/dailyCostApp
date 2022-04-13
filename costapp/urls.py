@@ -6,7 +6,7 @@ from costapp.api.views import TodayMyCostAPIView, SingleTodayCostAPIView, Curren
 
 
 urlpatterns = [
-    path('', index, name='inddex'),
+    path('', index, name='index'),
 
     path('api/today-cost-list/', TodayMyCostAPIView.as_view(), name='today_cost_list'),
 
