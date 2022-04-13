@@ -12,8 +12,8 @@
             </div>
         </div>
         <div class="row mt-3">
-            <div class="cost-list col-12">
-                <table class="table bg-light text-center">
+            <div class="cost-list col-12 card p-3">
+                <table class="table text-center bg-white">
                     <thead>
                         <tr>
                             <th scope="col">No.</th>
@@ -62,13 +62,14 @@
     </div>
     <div class="col-xl-1"></div>
 </div>
+<br>
 
 <div class="row mt-5">
     <div class="col-xl-1"></div>
     <div class="col-xl-10" style="max-width: 999px;">
-        <div class="row today">
+        <div class="row today mt-3">
             <div class="col-lg-8">
-                <h2 class="">[[current_month_name]] Month Cost List</h2>
+                <h2 class="text-center">[[current_month_name]] Month Cost List</h2>
             </div>
             <div class="col-lg-4 mb-3">
                 <select class="form-select py-2"  @change="changeMonth($event)"  v-model="current_month_name" aria-label="Default select example">
@@ -76,9 +77,9 @@
                 </select>
             </div>
         </div>
-        <div class="row mt-3">
-            <div class="co-12">
-                <table v-if="isFound" class="table  bg-light text-center">
+        <div class="row mt-4">
+            <div class="col-12 cost-list card p-3">
+                <table v-if="isFound" class="table text-center bg-white">
                     <thead>
                         <tr>
                             <th scope="col">Day</th>
@@ -92,7 +93,7 @@
                             <td>[[lst.total]]</td>
                             <td><button type="button" data-bs-toggle="modal" data-bs-target="#detailsModal"
                                     @click="showDetails(lst.created_at__date)"
-                                    class="btn btn-sm btn-outline-secondary">Details</button></td>
+                                    class="btn btn-sm btn-outline-primary">Details</button></td>
 
                         </tr>
                         <tr class="py-4 bg-white">

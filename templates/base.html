@@ -13,10 +13,12 @@
     <style>
         body {
             font-family: Georgia, 'Times New Roman', Times, serif;
+            
         }
 
         .today {
-            border-bottom: solid 2px skyblue;
+            border-bottom: solid 3px skyblue;
+            transform: scale(1.03);
         }
 
         h1 {
@@ -82,13 +84,18 @@
             font-weight: 700;
             font-size: 24px;
         }
+        .cost-list{
+            border: solid 1px rgb(186, 206, 224);
+            box-shadow: 0px 6px 18px 0px rgb(186, 206, 224);
+            transform: scaleX(1.03);
+        }
 
        
         
     </style>
 </head>
 
-<body>
+<body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-light py-4">
         <div class="container">
             <a class="navbar-brand text-white text-uppercase" href="#">{{username}}</a>
