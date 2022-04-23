@@ -43,7 +43,6 @@ class TodayMyCostAPIView(APIView):
         today_cost_lists = MyCost.objects.filter(date_of_cost=today)
         
         data = request.data
-        data['date_of_cost'] = today
         data['user'] = request.user.id
         total = data['amount_of_cost']
         try:
@@ -100,7 +99,7 @@ class CurrentMonthCostAPIView(APIView):
     def get(self, request):
         current_month = datetime.now().month
         current_month_cost_lists = MyCost.objects.filter(created_at__month=current_month, user=request.user)
-        cmc_lists = current_month_cost_lists.filter().values('created_at__date').order_by('created_at__date').annotate(total=Sum('amount_of_cost'))
+        cmc_lists = current_month_cost_lists.filter().values('date_of_cost').order_by('-date_of_cost').annotate(total=Sum('amount_of_cost'))
 
         monthly_total_cost = 0
 
@@ -126,7 +125,7 @@ class MonthlyCostAPIView(APIView):
         except:
             context = {}; 
             return Response(context, status=status.HTTP_200_OK) 
-        cmc_lists = current_month_cost_lists.filter().values('created_at__date').order_by('created_at__date').annotate(total=Sum('amount_of_cost'))
+        cmc_lists = current_month_cost_lists.filter().values('date_of_cost').order_by('-date_of_cost').annotate(total=Sum('amount_of_cost'))
 
         monthly_total_cost = 0
 
@@ -145,7 +144,7 @@ class ShowDetails(APIView):
     permission_classes = (permissions.AllowAny, )
 
     def get(self, request, date_param):
-        date_wise_cost_lists = MyCost.objects.filter(created_at__date=date_param, user=request.user)
+        date_wise_cost_lists = MyCost.objects.filter(date_of_cost=date_param, user=request.user)
         serializer = MyCostSerializer(date_wise_cost_lists, many=True, )
 
         serializer_data = serializer.data

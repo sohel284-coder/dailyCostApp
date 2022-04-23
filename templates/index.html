@@ -89,10 +89,10 @@
                     </thead>
                     <tbody class="mt-2">
                         <tr v-for="lst in current_month_cost_lists">
-                            <td>[[lst.created_at__date]]</a></td>
+                            <td>[[lst.date_of_cost]]</a></td>
                             <td>[[lst.total]]</td>
                             <td><button type="button" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                                    @click="showDetails(lst.created_at__date)"
+                                    @click="showDetails(lst.date_of_cost)"
                                     class="btn btn-sm btn-outline-primary">Details</button></td>
 
                         </tr>
@@ -130,6 +130,11 @@
                     <div class="form-group mb-3">
                         <label for="costName">Amount Of Cost</label>
                         <input required type="number" class="form-control" v-model="amount_of_cost">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="costName">Date</label>
+                        <td><input type="date" class="form-control" id="date" v-model="date"></td>
+                        <p class="text-danger text-sm mt-1">*Default date is today</p>
                     </div>
                 </div>
                 <div class="modal-footer">
