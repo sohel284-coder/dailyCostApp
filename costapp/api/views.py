@@ -11,7 +11,10 @@ from rest_framework import permissions
 from rest_framework.generics import get_object_or_404
 
 from costapp.api.serializers import MyCostSerializer
-from costapp.models import MyCost
+from costapp.models import AddIncome, MyCost
+
+
+
 
 
 
@@ -29,9 +32,15 @@ class TodayMyCostAPIView(APIView):
         for data in serializer_data:
             today_total_cost = today_total_cost + data['amount_of_cost']
 
+
+        income = AddIncome.objects.filter(month_name=datetime.now().month).values('income_amount').annotate(greatest=Max('income_amount')).values('greatest').aggregate(total=Sum('greatest'))
+        print(income)
+
+
         context = {
             'today_cost_list':serializer.data,
-            'today_total_cost':today_total_cost
+            'today_total_cost':today_total_cost,
+            'income':income,
         }   
        
         return Response(context, status=status.HTTP_200_OK)

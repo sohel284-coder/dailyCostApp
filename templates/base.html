@@ -49,11 +49,12 @@
             color: #262626;
             font-size: 18px;
             font-weight: 500;
-            box-shadow: 0px 3px 8px #272728;
+            box-shadow: 0px 3px 8px #0f0f41;;
 
         }
 
         .btn-custom:hover {
+            background-color:#ea0d;
             box-shadow: 0px 6px 18px #272728;
         }
 
@@ -90,6 +91,15 @@
             box-shadow: 0px 6px 18px 0px rgb(186, 206, 224);
             transform: scaleX(1.01);
         }
+        .nav-item input{
+            background-color: #fff !important;
+            border: solid 1px #fff;
+            color: #262626;
+            font-size: 18px;
+            font-weight: 500;
+            box-shadow: 0px 3px 8px #0f0f41;
+            
+        }
 
        
         
@@ -107,9 +117,17 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-
+                    <li class="nav-item me-3">
+                        <h3 class="text-white py-2">{{current_month}}</h2>
+                    </li>
+                    <li class="nav-item me-3">
+                       <input type="text" value="Income - {{income}}" disabled class="form-control text-center py-2">
+                    </li>
+                    <li class="nav-item me-3">
+                       <input type="text" value="Balance - {{balance}}" disabled class="form-control text-center py-2">
+                    </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-sm btn-custom py-2" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link btn btn-sm btn-custom" href="{% url 'logout' %}">Logout</a>
                     </li>
                 </ul>
 
@@ -150,6 +168,7 @@
                 isDetails: false,
                 isEdit: false,
                 isDelete: false,
+                income:null,
                 date: null,
                 months: [],
                 isFound: false,
@@ -186,6 +205,7 @@
                         console.log(response);
                         that.today_cost_lists = response.today_cost_list;
                         that.today_total_cost = response.today_total_cost;
+                        that.income = response.income.total;
                     }).catch(error => {
                         console.log(error)
                     })
